@@ -1,6 +1,6 @@
 from fastapi import FastAPI,Path
 from PyPDF2 import PdfReader
-
+import os
 app = FastAPI()
 
 
@@ -12,7 +12,8 @@ async def root():
 # get texts from pdf
 @app.get("/pdf/{file_path:path}")
 async def read_pdf(file_path: str = Path(..., description="Path to the PDF file")):
-    reader = PdfReader(file_path)
+    absolute_path = os.path.join(os.getcwd(), file_path)
+    reader = PdfReader(absolute_path)
     number_of_pages = len(reader.pages)
     text = ''
     for i in range(number_of_pages):
