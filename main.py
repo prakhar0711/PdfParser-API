@@ -11,7 +11,7 @@ async def root():
 
 
 # get texts from pdf
-@app.get("/pdf/{file_name}")
+@app.get("/pdf/{filename}")
 async def read_pdf(file_name: str):
     reader = PdfReader(file_name)
     number_of_pages = len(reader.pages)
@@ -23,7 +23,7 @@ async def read_pdf(file_name: str):
     return text
 
 
-@app.get("/pdf/metadata/{file_name}")
+@app.get("/pdf/metadata/{filename}")
 async def metadata_pdf(file_name: str):
     reader = PdfReader(file_name)
     meta = reader.metadata
@@ -34,7 +34,7 @@ async def metadata_pdf(file_name: str):
     return metaFile
 
 
-@app.get("/pdf/img/{file_name}")
+@app.get("/pdf/img/{filename}")
 async def getImages(file_name: str):
     reader = PdfReader(file_name)
     number_of_pages = len(reader.pages)
