@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from PyPDF2 import PdfReader
+from pathlib import Path
 
 app = FastAPI()
 
@@ -10,9 +11,12 @@ async def root():
 
 
 # get texts from pdf
-@app.get("/pdf/{file_name}")
-async def read_pdf(file_name: str):
-    reader = PdfReader(file_name)
+@app.get("/pdf/{file_path:path}")
+async def read_pdf(file_path: Path):
+    # Convert the Path to a string
+    file_path_str = str(file_path)
+
+    reader = PdfReader(file_path_str)
     number_of_pages = len(reader.pages)
     text = ''
     for i in range(number_of_pages):
@@ -22,9 +26,12 @@ async def read_pdf(file_name: str):
     return text
 
 
-@app.get("/pdf/metadata/{file_name}")
-async def metadata_pdf(file_name: str):
-    reader = PdfReader(file_name)
+@app.get("/pdf/metadata/{file_path:path}")
+async def metadata_pdf(file_path: Path):
+    # Convert the Path to a string
+    file_path_str = str(file_path)
+
+    reader = PdfReader(file_path_str)
     meta = reader.metadata
     metaFile = {"author": meta.author, "title": meta.title, "subject": meta.subject, "creator": meta.creator,
                 " producer": meta.producer, "creation_date": meta.creation_date,
@@ -33,9 +40,12 @@ async def metadata_pdf(file_name: str):
     return metaFile
 
 
-@app.get("/pdf/img/{file_name}")
-async def getImages(file_name: str):
-    reader = PdfReader(file_name)
+@app.get("/pdf/img/{file_path:path}")
+async def getImages(file_path: Path):
+    # Convert the Path to a string
+    file_path_str = str(file_path)
+
+    reader = PdfReader(file_path_str)
     number_of_pages = len(reader.pages)
     count = 0
     for i in range(number_of_pages):
@@ -44,3 +54,5 @@ async def getImages(file_name: str):
             with open(str(count) + image_object.name, "wb") as fp:
                 fp.write(image_object.data)
                 count += 1
+
+    return {"message": "Images extracted successfully"}
