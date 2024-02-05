@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,Path
 from PyPDF2 import PdfReader
 
 app = FastAPI()
@@ -10,9 +10,9 @@ async def root():
 
 
 # get texts from pdf
-@app.get("/pdf/{file_name}")
-async def read_pdf(file_name: str):
-    reader = PdfReader(file_name)
+@app.get("/pdf/{file_path:path}")
+async def read_pdf(file_path: str = Path(..., description="Path to the PDF file")):
+    reader = PdfReader(file_path)
     number_of_pages = len(reader.pages)
     text = ''
     for i in range(number_of_pages):
@@ -33,9 +33,9 @@ async def metadata_pdf(file_name: str):
     return metaFile
 
 
-@app.get("/pdf/img/{file_name}")
-async def getImages(file_name: str):
-    reader = PdfReader(file_name)
+@app.get("/pdf/img/{file_path:path}")
+async def getImages(file_path: str = Path(..., description="Path to the PDF file")):
+    reader = PdfReader(file_path)
     number_of_pages = len(reader.pages)
     count = 0
     for i in range(number_of_pages):
