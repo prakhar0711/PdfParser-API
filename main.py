@@ -1,6 +1,7 @@
-from fastapi import FastAPI,Path
+from fastapi import FastAPI, File, UploadFile
 from PyPDF2 import PdfReader
 import os
+
 app = FastAPI()
 
 
@@ -10,10 +11,9 @@ async def root():
 
 
 # get texts from pdf
-@app.get("/pdf/{file_path:path}")
-async def read_pdf(file_path: str = Path(..., description="Path to the PDF file")):
-    absolute_path = os.path.join(os.getcwd(), file_path)
-    reader = PdfReader(absolute_path)
+@app.get("/pdf/{file_name}")
+async def read_pdf(file_name: str):
+    reader = PdfReader(file_name)
     number_of_pages = len(reader.pages)
     text = ''
     for i in range(number_of_pages):
@@ -34,9 +34,9 @@ async def metadata_pdf(file_name: str):
     return metaFile
 
 
-@app.get("/pdf/img/{file_path:path}")
-async def getImages(file_path: str = Path(..., description="Path to the PDF file")):
-    reader = PdfReader(file_path)
+@app.get("/pdf/img/{file_name}")
+async def getImages(file_name: str):
+    reader = PdfReader(file_name)
     number_of_pages = len(reader.pages)
     count = 0
     for i in range(number_of_pages):
@@ -45,3 +45,13 @@ async def getImages(file_path: str = Path(..., description="Path to the PDF file
             with open(str(count) + image_object.name, "wb") as fp:
                 fp.write(image_object.data)
                 count += 1
+
+
+@app.post("/uploadfile")
+async def create_upload_file(file: UploadFile = File(...)):
+    # Save the uploaded file
+    file_path = os.path.join("uploads", file.filename)
+    with open(file_path, "wb") as f:
+        f.write(file.file.read())
+
+    return {"filename": file.filename}
